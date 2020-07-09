@@ -79,6 +79,14 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
+    const areAllTubesBlocked = tubes.filter((t) => t.blocked === false).length === 0;
+
+    if (areAllTubesBlocked) {
+      dispatch(endGame());
+    }
+  }, [tubes, dispatch]);
+
+  useEffect(() => {
     let timerInterval: any;
 
     switch (status) {
