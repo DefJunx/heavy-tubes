@@ -83,22 +83,12 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    if (status !== GAME_STATUSES.STARTED) {
-      return;
-    }
-
-    const areAllTubesBlocked = tubes.filter((t) => t.blocked === false).length === 0;
-
-    if (areAllTubesBlocked) {
-      dispatch(endGame());
-    }
-  }, [status, tubes, dispatch]);
-
-  useEffect(() => {
     let timerInterval: any;
 
     switch (status) {
       case GAME_STATUSES.STARTED:
+        setShowScore(false);
+
         timerInterval = setInterval(() => {
           setTimer((t) => {
             if (t - ONE_SECOND === 0) {
@@ -129,6 +119,12 @@ const Home: React.FC = () => {
             return t - ONE_SECOND;
           });
         }, ONE_SECOND);
+
+        const areAllTubesBlocked = tubes.filter((t) => t.blocked === false).length === 0;
+
+        if (areAllTubesBlocked) {
+          dispatch(endGame());
+        }
         break;
       case GAME_STATUSES.PAUSED:
         clearInterval(timerInterval);
