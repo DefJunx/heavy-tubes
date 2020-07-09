@@ -25,6 +25,9 @@ export const homeSlice = createSlice({
     pauseGame: (state) => {
       state.gameStatus = GAME_STATUSES.PAUSED;
     },
+    endGame: (state) => {
+      state.gameStatus = GAME_STATUSES.FINISHED;
+    },
     setGameStatus: (state, action: PayloadAction<GAME_STATUSES>) => {
       state.gameStatus = action.payload;
     },
@@ -34,10 +37,26 @@ export const homeSlice = createSlice({
     setTubes: (state, action: PayloadAction<Tube[]>) => {
       state.tubes = action.payload;
     },
+    updateTube: (state, action: PayloadAction<Tube>) => {
+      state.tubes = state.tubes.map((t) => {
+        if (t.id === action.payload.id) {
+          return action.payload;
+        }
+        return t;
+      });
+    },
   },
 });
 
-export const { setGameStatus, setTargetWeight, setTubes } = homeSlice.actions;
+export const {
+  startGame,
+  pauseGame,
+  endGame,
+  setGameStatus,
+  setTargetWeight,
+  setTubes,
+  updateTube,
+} = homeSlice.actions;
 
 export const selectGameStatus = (state: RootState) => state.home.gameStatus;
 export const selectTargetWeight = (state: RootState) => state.home.targetWeight;
