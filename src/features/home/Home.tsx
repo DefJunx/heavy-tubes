@@ -145,7 +145,7 @@ const Home: React.FC = () => {
   return (
     <section className="w-3/4 mx-auto p-20 bg-teal-200 uppercase">
       <img className="block mx-auto mb-20" src={logo} alt="Heavy Tubes logo" />
-      {status !== GAME_STATUSES.NOT_STARTED && (
+      {status !== GAME_STATUSES.NOT_STARTED && status !== GAME_STATUSES.FINISHED && (
         <div className="flex flex-row sm:flex-col md:flex-row justify-between items-center">
           <div className="flex-1 sm:text-center md:text-left text-xl font-bold">
             <div>Target Weight: {+targetWeight / 1000} KG</div>
@@ -154,7 +154,8 @@ const Home: React.FC = () => {
           <div className="flex-1 sm:text-center md:text-right text-xl font-bold">Time left {+timer / 1000}s</div>
         </div>
       )}
-      {showScore && <Scoreboard playerWeight={playerWeight} targetWeight={targetWeight} timeLeft={timer}></Scoreboard>}
+      <Scoreboard playerWeight={3000} targetWeight={5000} timeLeft={3000}></Scoreboard>
+      {/* {showScore && <Scoreboard playerWeight={playerWeight} targetWeight={targetWeight} timeLeft={timer}></Scoreboard>} */}
       {((status === GAME_STATUSES.STARTED || status === GAME_STATUSES.PAUSED) && tubes.length) > 0 && (
         <div className="my-20">
           <div className="flex flex-row sm:flex-col md:flex-row justify-between">
