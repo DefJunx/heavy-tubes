@@ -5,8 +5,10 @@ import {
   selectGameStatus,
   selectTubes,
   selectTargetWeight,
+  selectPlayerWeight,
   startGame,
   pauseGame,
+  updatePlayerWeight,
   setTargetWeight,
   setTubes,
   endGame,
@@ -28,14 +30,16 @@ const MAX_INCREMENT_WEIGHT = 1000 * 5;
 const NR_TUBES = 3;
 
 const Home: React.FC = () => {
+  const dispatch = useDispatch();
+
   const status = useSelector(selectGameStatus);
   const tubes = useSelector(selectTubes);
   const targetWeight = useSelector(selectTargetWeight);
-  const dispatch = useDispatch();
+  const playerWeight = useSelector(selectPlayerWeight);
+
   const [timer, setTimer] = useState(DEFAULT_TIMER);
   const [startButtonLabel, setStartButtonLabel] = useState(DEFAULT_START_LABEL);
   const [showScore, setShowScore] = useState(false);
-  const [playerWeight, setPlayerWeight] = useState(0);
 
   const startButtonClick = (e: React.MouseEvent) => {
     console.log("Game start");
@@ -49,12 +53,11 @@ const Home: React.FC = () => {
         .fill(1)
         .map((el) => createTube());
       const targetWeight = Math.floor(Math.random() * (MAX_TARGET_WEIGHT - MIN_TARGET_WEIGHT + 1)) + MIN_TARGET_WEIGHT;
-      const newTubesSum = newTubes.reduce((sum, current) => sum + current.weight, 0);
 
       setTimer(DEFAULT_TIMER);
       dispatch(setTargetWeight(Number(targetWeight) || 0));
       dispatch(setTubes(newTubes));
-      setPlayerWeight(newTubesSum);
+      dispatch(updatePlayerWeight());
     }
   };
 
@@ -120,10 +123,9 @@ const Home: React.FC = () => {
                 weight,
               };
             });
-            const updatedPlayerWeight = updatedTubes.reduce((sum, current) => sum + current.weight, 0);
 
             dispatch(setTubes(updatedTubes));
-            setPlayerWeight(updatedPlayerWeight);
+            dispatch(updatePlayerWeight());
 
             return t - ONE_SECOND;
           });
