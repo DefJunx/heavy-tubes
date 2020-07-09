@@ -23,6 +23,8 @@ const DEFAULT_TIMER = ONE_SECOND * 5;
 const DEFAULT_START_LABEL = "START";
 const MIN_TARGET_WEIGHT = 1000 * 100;
 const MAX_TARGET_WEIGHT = 1000 * 150;
+const MIN_INCREMENT_WEIGHT = 1000 * 2;
+const MAX_INCREMENT_WEIGHT = 1000 * 5;
 const NR_TUBES = 3;
 
 const Home: React.FC = () => {
@@ -79,12 +81,16 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
+    if (status !== GAME_STATUSES.STARTED) {
+      return;
+    }
+
     const areAllTubesBlocked = tubes.filter((t) => t.blocked === false).length === 0;
 
     if (areAllTubesBlocked) {
       dispatch(endGame());
     }
-  }, [tubes, dispatch]);
+  }, [status, tubes, dispatch]);
 
   useEffect(() => {
     let timerInterval: any;
@@ -93,11 +99,31 @@ const Home: React.FC = () => {
       case GAME_STATUSES.STARTED:
         timerInterval = setInterval(() => {
           setTimer((t) => {
-            if (t === 0) {
+            if (t - ONE_SECOND === 0) {
               clearInterval(timerInterval);
               dispatch(endGame());
               return 0;
             }
+
+            const updatedTubes = tubes.map((t) => {
+              if (t.blocked) {
+                return t;
+              }
+
+              const weight =
+                t.weight +
+                Math.floor(Math.random() * (MAX_INCREMENT_WEIGHT - MIN_INCREMENT_WEIGHT + 1)) +
+                MIN_INCREMENT_WEIGHT;
+
+              return {
+                ...t,
+                weight,
+              };
+            });
+            const updatedPlayerWeight = updatedTubes.reduce((sum, current) => sum + current.weight, 0);
+
+            dispatch(setTubes(updatedTubes));
+            setPlayerWeight(updatedPlayerWeight);
 
             return t - ONE_SECOND;
           });
@@ -112,12 +138,15 @@ const Home: React.FC = () => {
         setStartButtonLabel("RESTART");
         setShowScore(true);
         break;
+      case GAME_STATUSES.NOT_STARTED:
+        setStartButtonLabel(DEFAULT_START_LABEL);
+        break;
       default:
         setStartButtonLabel(DEFAULT_START_LABEL);
     }
 
     return () => clearInterval(timerInterval);
-  }, [status, dispatch]);
+  }, [status, tubes, dispatch]);
 
   return (
     <section className="w-3/4 mx-auto p-20 bg-teal-200 uppercase">
@@ -136,6 +165,7 @@ const Home: React.FC = () => {
           <div className="flex flex-row sm:flex-col md:flex-row justify-between">
             {tubes.map((tube) => (
               <div
+                key={tube.id}
                 className={`w-4/12 self-center ${
                   tube.blocked || status !== GAME_STATUSES.STARTED ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
                 }`}
