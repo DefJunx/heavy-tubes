@@ -19,6 +19,8 @@ import { createTube } from "../../models/tube";
 
 import logo from "../../assets/images/logo.png";
 import tubeImage from "../../assets/images/tube.png";
+import crateImage from "../../assets/images/crate.png";
+import Scoreboard from "../scoreboard/Scoreboard";
 
 const ONE_SECOND = 1000;
 const DEFAULT_TIMER = ONE_SECOND * 5;
@@ -43,10 +45,7 @@ const Home: React.FC = () => {
 
   const startButtonClick = (e: React.MouseEvent) => {
     console.log("Game start");
-    setShowScore(false);
     dispatch(startGame());
-
-    // setGameStatus(GAME_STATUSES.STARTED);
 
     if (status === GAME_STATUSES.NOT_STARTED || status === GAME_STATUSES.FINISHED) {
       const newTubes = Array(NR_TUBES)
@@ -140,9 +139,6 @@ const Home: React.FC = () => {
         setStartButtonLabel("RESTART");
         setShowScore(true);
         break;
-      case GAME_STATUSES.NOT_STARTED:
-        setStartButtonLabel(DEFAULT_START_LABEL);
-        break;
       default:
         setStartButtonLabel(DEFAULT_START_LABEL);
     }
@@ -162,6 +158,7 @@ const Home: React.FC = () => {
           <div className="flex-1 sm:text-center md:text-right text-xl font-bold">Time left {+timer / 1000}s</div>
         </div>
       )}
+      {showScore && <Scoreboard playerWeight={playerWeight} targetWeight={targetWeight} timeLeft={timer}></Scoreboard>}
       {((status === GAME_STATUSES.STARTED || status === GAME_STATUSES.PAUSED) && tubes.length) > 0 && (
         <div className="my-20">
           <div className="flex flex-row sm:flex-col md:flex-row justify-between">
@@ -171,16 +168,15 @@ const Home: React.FC = () => {
                 className={`w-4/12 self-center ${
                   tube.blocked || status !== GAME_STATUSES.STARTED ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
                 }`}
-                onClick={() => onTubeClick(tube.id)}
               >
                 <img className="w-40 mx-auto block" src={tubeImage} alt="Tube" />
+                <img onClick={() => onTubeClick(tube.id)} className="w-40 mx-auto block" src={crateImage} alt="Crate" />
               </div>
               // <Tube key={el.id} tube={el}></Tube>
             ))}
           </div>
         </div>
       )}
-      {/* {showScore && <Scoreboard></Scoreboard>} */}
       <div className="my-10 flex items-center justify-between">
         {status !== GAME_STATUSES.STARTED && (
           <button className="flex-1 font-bold py-2 px-4 rounded bg-green-700 text-white" onClick={startButtonClick}>
