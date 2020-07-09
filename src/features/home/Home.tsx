@@ -23,7 +23,7 @@ import crateImage from "../../assets/images/crate.png";
 import Scoreboard from "../scoreboard/Scoreboard";
 
 const ONE_SECOND = 1000;
-const DEFAULT_TIMER = ONE_SECOND * 5;
+const DEFAULT_TIMER = ONE_SECOND * 30;
 const DEFAULT_START_LABEL = "START";
 const MIN_TARGET_WEIGHT = 1000 * 100;
 const MAX_TARGET_WEIGHT = 1000 * 150;
@@ -142,6 +142,12 @@ const Home: React.FC = () => {
     return () => clearInterval(timerInterval);
   }, [status, tubes, dispatch]);
 
+  useEffect(() => {
+    if (playerWeight > targetWeight) {
+      dispatch(endGame());
+    }
+  }, [playerWeight, dispatch, targetWeight]);
+
   return (
     <section className="w-3/4 mx-auto p-20 bg-teal-200 uppercase">
       <img className="block mx-auto mb-20" src={logo} alt="Heavy Tubes logo" />
@@ -154,8 +160,7 @@ const Home: React.FC = () => {
           <div className="flex-1 sm:text-center md:text-right text-xl font-bold">Time left {+timer / 1000}s</div>
         </div>
       )}
-      <Scoreboard playerWeight={3000} targetWeight={5000} timeLeft={3000}></Scoreboard>
-      {/* {showScore && <Scoreboard playerWeight={playerWeight} targetWeight={targetWeight} timeLeft={timer}></Scoreboard>} */}
+      {showScore && <Scoreboard playerWeight={playerWeight} targetWeight={targetWeight} timeLeft={timer}></Scoreboard>}
       {((status === GAME_STATUSES.STARTED || status === GAME_STATUSES.PAUSED) && tubes.length) > 0 && (
         <div className="my-20">
           <div className="flex flex-row sm:flex-col md:flex-row justify-between">
